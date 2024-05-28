@@ -370,13 +370,17 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 {
 	TreeNode *root = new TreeNode(M, N, top, board, lastX, lastY, NULL, noX, noY, true);
 	// printf("NEW SUCCESS");
+	std::cerr << "N";
 
 	int T = 0;
 	while (T < MAX_ITER)
 	{
 		TreeNode *v = select(root);
+		
+		std::cerr << "S";
 		// printf("begin roll\n");
 		int reward = v->rollout();
+		std::cerr << "R";
 		// printf("end roll\n");
 		while (v != NULL)
 		{
@@ -384,6 +388,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 			v->win += reward;
 			v = v->fa;
 		}
+		std::cerr << "B";
 		T++;
 	}
 	

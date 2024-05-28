@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cassert>
+#include <cmath>
 #include <unistd.h>
 #include "Point.h"
 #include "Strategy.h"
 #include "Judge.h"
 
 const int C = 1;
-const int MAX_ITER = 1000;
+const int MAX_ITER = 100000;
 
 using namespace std;
 
@@ -244,13 +245,16 @@ TreeNode *select(TreeNode *u)
 	{
 		TreeNode *v = NULL;
 		double max_ucb = -1;
-		for (int i = 0; i < u->ava_ch; i++)
+		for (int i = 0; i < u->N; i++)
 		{
-			double ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-			if (ucb > max_ucb)
+			if (u->ch[i] != NULL)
 			{
-				max_ucb = ucb;
-				v = u->ch[i];
+				double ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+				if (ucb > max_ucb)
+				{
+					max_ucb = ucb;
+					v = u->ch[i];
+				}
 			}
 		}
 		return select(v);
@@ -362,6 +366,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		T++;
 	}
 	
+	// printf("########\n");
 	TreeNode *best = NULL;
 	double max_rate = -1;
 	for (int i = 0; i < root->ava_ch; i++)
@@ -371,8 +376,9 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		{
 			max_rate = rate;
 			best = root->ch[i];
-			// printf("%d %d %f\n", root->ch[i]->x, root->ch[i]->y, rate);
 		}
+		// printf("%d %d %d %d\n", root->ch[i]->x, root->ch[i]->y, root->ch[i]->win, root->ch[i]->tot);
+		std::cerr << root->ch[i]->x << " " << root->ch[i]->y << " " << root->ch[i]->win << " " << root->ch[i]->tot << " " << rate << std::endl;
 	}
 	
 	assert(best != NULL);

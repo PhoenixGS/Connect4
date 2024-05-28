@@ -68,6 +68,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 	Point* pt = UctSearch(M, N, top, board, lastX, lastY, noX, noY);
 	x = pt->x;
 	y = pt->y;
+	// printf("ME %d %d\n", x, y);
 
 	/*
 		不要更改这段代码
@@ -110,7 +111,7 @@ struct TreeNode
 	int **board;
 	int *top;
 	int x, y;
-	int ava_ch;
+	int ava_ch, exp_ch;
 	int noX, noY;
 	TreeNode *fa;
 	TreeNode **ch;
@@ -155,6 +156,7 @@ struct TreeNode
 				this->ava_ch++;
 			}
 		}
+		this->exp_ch = 0;
 	}
 
 	~TreeNode()
@@ -186,11 +188,17 @@ bool TreeNode::terminal()
 
 bool TreeNode::all_expanded()
 {
-	return tot == ava_ch;
+	return exp_ch == ava_ch;
 }
 
 TreeNode *TreeNode::expand()
 {
+	/*printf("%d %d %d\n", self, ava_ch, tot);
+	for (int i = 0; i < N; i++)
+	{
+		printf("%d ", top[i]);
+	}
+	printf("\n");*/
 	for (int i = 0; i < N; i++)
 	{
 		if (top[i] > 0 && ch[i] == NULL)
@@ -217,6 +225,7 @@ TreeNode *TreeNode::expand()
 			}
 			ch[i] = new TreeNode(M, N, new_top, new_board, top[i] - 1, i, this, noX, noY, !self);
 			
+			exp_ch++;
 			for (int i = 0; i < M; i++)
 			{
 				delete[] new_board[i];
@@ -350,6 +359,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 			v->win += reward;
 			v = v->fa;
 		}
+		T++;
 	}
 	
 	TreeNode *best = NULL;
@@ -361,10 +371,14 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		{
 			max_rate = rate;
 			best = root->ch[i];
+			// printf("%d %d %f\n", root->ch[i]->x, root->ch[i]->y, rate);
 		}
 	}
 	
+	assert(best != NULL);
+	int x = best->x;
+	int y = best->y;
 	delete root;
-	return new Point(best->x, best->y);
+	return new Point(x, y);
 }
 

@@ -245,35 +245,38 @@ TreeNode *TreeNode::expand()
 
 TreeNode *select(TreeNode *u)
 {
-	if (u->terminal()) return u;
-	if (u->all_expanded())
+	while (! (u->terminal()))
 	{
-		TreeNode *v = NULL;
-		double max_ucb = -1;
-		for (int i = 0; i < u->N; i++)
+		if (u->all_expanded())
 		{
-			if (u->ch[i] != NULL)
+			TreeNode *v = NULL;
+			double max_ucb = -1;
+			for (int i = 0; i < u->N; i++)
 			{
-				double ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-				if (ucb > max_ucb)
+				if (u->ch[i] != NULL)
 				{
-					max_ucb = ucb;
-					v = u->ch[i];
+					double ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+					if (ucb > max_ucb)
+					{
+						max_ucb = ucb;
+						v = u->ch[i];
+					}
 				}
 			}
+			u = v;
 		}
-		return select(v);
-	}
-	else
-	{
-		/* std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
-		for (int i = 0; i < u->N; i++)
+		else
 		{
-			std::cerr << u->ch[i] << " ";
+			/* std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
+			for (int i = 0; i < u->N; i++)
+			{
+				std::cerr << u->ch[i] << " ";
+			}
+			std::cerr << std::endl;*/
+			return u->expand();
 		}
-		std::cerr << std::endl;*/
-		return u->expand();
 	}
+	return u;
 }
 
 int TreeNode::rollout()

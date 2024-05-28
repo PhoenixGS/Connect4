@@ -147,6 +147,10 @@ struct TreeNode
 		this->y = y;
 		this->fa = fa;
 		this->ch = new TreeNode *[N];
+		for (int i = 0; i < N; i++)
+		{
+			ch[i] = NULL;
+		}
 		this->noX = noX;
 		this->noY = noY;
 		this->ava_ch = 0;
@@ -235,6 +239,7 @@ TreeNode *TreeNode::expand()
 			return ch[i];
 		}
 	}
+	std::cerr << "EXPAND" << exp_ch << " " << ava_ch << std::endl;
 	assert(false);
 }
 
@@ -261,18 +266,19 @@ TreeNode *select(TreeNode *u)
 	}
 	else
 	{
-		std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
+		/* std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
 		for (int i = 0; i < u->N; i++)
 		{
 			std::cerr << u->ch[i] << " ";
 		}
-		std::cerr << std::endl;
+		std::cerr << std::endl;*/
 		return u->expand();
 	}
 }
 
 int TreeNode::rollout()
 {
+	// printf("ROLLBEG\n");
 	int **new_board = new int *[M];
 	for (int i = 0; i < M; i++)
 	{
@@ -318,11 +324,13 @@ int TreeNode::rollout()
 		int new_ava_ch = 0;
 		for (int i = 0; i < N; i++)
 		{
+			// printf("%d ", new_top[i]);
 			if (new_top[i] > 0)
 			{
 				new_ava_ch++;
 			}
 		}
+		// printf("\n");
 		int new_i = rand() % new_ava_ch;
 		for (int i = 0; i < N; i++)
 		{
@@ -346,6 +354,7 @@ int TreeNode::rollout()
 		}
 	}
 	
+	// printf("ROLLEND\n");
 	for (int i = 0; i < M; i++)
 	{
 		delete[] new_board[i];
@@ -357,14 +366,15 @@ int TreeNode::rollout()
 Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY, int noX, int noY)
 {
 	TreeNode *root = new TreeNode(M, N, top, board, lastX, lastY, NULL, noX, noY, true);
+	// printf("NEW SUCCESS");
 
 	int T = 0;
 	while (T < MAX_ITER)
 	{
 		TreeNode *v = select(root);
-		printf("begin roll");
+		// printf("begin roll\n");
 		int reward = v->rollout();
-		printf("end roll");
+		// printf("end roll\n");
 		while (v != NULL)
 		{
 			v->tot++;
@@ -377,16 +387,19 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	// printf("########\n");
 	TreeNode *best = NULL;
 	double max_rate = -1;
-	for (int i = 0; i < root->ava_ch; i++)
+	for (int i = 0; i < root->N; i++)
 	{
-		double rate = (double)root->ch[i]->win / root->ch[i]->tot;
-		if (rate > max_rate)
+		if (root->ch[i] != NULL)
 		{
-			max_rate = rate;
-			best = root->ch[i];
+			double rate = (double)root->ch[i]->win / root->ch[i]->tot;
+			if (rate > max_rate)
+			{
+				max_rate = rate;
+				best = root->ch[i];
+			}
+			// printf("%d %d %d %d\n", root->ch[i]->x, root->ch[i]->y, root->ch[i]->win, root->ch[i]->tot);
+			// std::cerr << root->ch[i]->x << " " << root->ch[i]->y << " " << root->ch[i]->win << " " << root->ch[i]->tot << " " << rate << std::endl;
 		}
-		// printf("%d %d %d %d\n", root->ch[i]->x, root->ch[i]->y, root->ch[i]->win, root->ch[i]->tot);
-		std::cerr << root->ch[i]->x << " " << root->ch[i]->y << " " << root->ch[i]->win << " " << root->ch[i]->tot << " " << rate << std::endl;
 	}
 	
 	assert(best != NULL);

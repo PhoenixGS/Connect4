@@ -261,6 +261,12 @@ TreeNode *select(TreeNode *u)
 	}
 	else
 	{
+		std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
+		for (int i = 0; i < u->N; i++)
+		{
+			std::cerr << u->ch[i] << " ";
+		}
+		std::cerr << std::endl;
 		return u->expand();
 	}
 }
@@ -356,7 +362,9 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	while (T < MAX_ITER)
 	{
 		TreeNode *v = select(root);
+		printf("begin roll");
 		int reward = v->rollout();
+		printf("end roll");
 		while (v != NULL)
 		{
 			v->tot++;

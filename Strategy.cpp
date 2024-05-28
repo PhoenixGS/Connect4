@@ -208,6 +208,7 @@ TreeNode *TreeNode::expand()
 	{
 		if (top[i] > 0 && ch[i] == NULL)
 		{
+			std::cerr << "EX " << i << std::endl;
 			int **new_board = new int *[M];
 			for (int i = 0; i < M; i++)
 			{
@@ -228,7 +229,9 @@ TreeNode *TreeNode::expand()
 			{
 				new_top[i]--;
 			}
+			std::cerr << "READY TO NEW" << std::endl;
 			ch[i] = new TreeNode(M, N, new_top, new_board, top[i] - 1, i, this, noX, noY, !self);
+			std::cerr << "NEWED" << std::endl;
 			
 			exp_ch++;
 			for (int i = 0; i < M; i++)
@@ -245,6 +248,7 @@ TreeNode *TreeNode::expand()
 
 TreeNode *select(TreeNode *u)
 {
+	std::cerr << u->ava_ch << " " << u->exp_ch << std::endl;
 	while (! (u->terminal()))
 	{
 		if (u->all_expanded())
@@ -273,6 +277,7 @@ TreeNode *select(TreeNode *u)
 				std::cerr << u->ch[i] << " ";
 			}
 			std::cerr << std::endl;*/
+			std::cerr << "EXPAND" << std::endl;
 			return u->expand();
 		}
 	}

@@ -161,8 +161,8 @@ double TreeNode::rollout()
 
 void TreeNode::print()
 {
-	std::cerr << this << " " << fa << " " << x << " " << y << " " << win << " " << tot << " " << self << std::endl;
-	if (fa == NULL || fa->fa == NULL)
+	std::cerr << this << " " << fa << " " << x << " " << y << " " << win << " " << tot << " " << self << " " << win / tot << std::endl;
+	if (fa == NULL)
 	{
 		for (int i = 0; i < N; i++)
 		{

@@ -127,14 +127,14 @@ TreeNode *ucb_best(TreeNode *u)
 		if (u->ch[i] != NULL)
 		{
 			double ucb = 0;
-			if (u->ch[i]->self)
-			{
+//			if (u->ch[i]->self)
+//			{
 				ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-			}
-			else
-			{
-				ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-			}
+//			}
+//			else
+//			{
+//				ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+//			}
 			if (ucb > max_ucb)
 			{
 				max_ucb = ucb;
@@ -176,7 +176,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		while (v != NULL)
 		{
 			v->tot++;
-			if (ori_self == v->self)
+			if (ori_self != v->self)
 			{
 				v->win += reward;
 			}
@@ -194,7 +194,8 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	assert(best != NULL);
 	int x = best->x;
 	int y = best->y;
-	root->print();
+	// printf("#####%d %d\n", x, y);
+	// root->print();
 	delete root;
 	return new Point(x, y);
 }

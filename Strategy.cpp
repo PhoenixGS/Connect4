@@ -68,7 +68,6 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 		}
 	}*/
 	
-	// printf("??%d %d\n", lastX, lastY);
 	Point* pt = SingleChoice(M, N, board, top, 1);
 	if (pt->x != -1 && pt->y != -1)
 	{
@@ -84,7 +83,6 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 		y = pt->y;
 		delete pt;
 	}
-	// printf("ME %d %d\n", x, y);
 
 	/*
 		不要更改这段代码
@@ -122,7 +120,6 @@ void clearArray(int M, int N, int **board)
 
 TreeNode *select(TreeNode *u)
 {
-	// std::cerr << u->ava_ch << " " << u->exp_ch << std::endl;
 	while (! (u->terminal()))
 	{
 		if (u->all_expanded())
@@ -153,13 +150,6 @@ TreeNode *select(TreeNode *u)
 		}
 		else
 		{
-			/* std::cerr << "EXPAND" << u->exp_ch << " " << u->ava_ch << std::endl;
-			for (int i = 0; i < u->N; i++)
-			{
-				std::cerr << u->ch[i] << " ";
-			}
-			std::cerr << std::endl;*/
-			// std::cerr << "EXPAND" << std::endl;
 			return u->expand();
 		}
 	}
@@ -170,20 +160,14 @@ TreeNode *select(TreeNode *u)
 Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY, int noX, int noY)
 {
 	TreeNode *root = new TreeNode(M, N, top, board, lastX, lastY, NULL, noX, noY, true);
-	// printf("NEW SUCCESS");
-	// std::cerr << "N";
 
 	int T = 0;
 	while (T < MAX_ITER)
 	{
 		TreeNode *v = select(root);
 		
-		// std::cerr << "S";
-		// printf("begin roll\n");
 		int reward = v->rollout();
 		int ori_self = v->self;
-		// std::cerr << "R";
-		// printf("end roll\n");
 		while (v != NULL)
 		{
 			v->tot++;
@@ -197,11 +181,9 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 			}
 			v = v->fa;
 		}
-		// std::cerr << "B";
 		T++;
 	}
 	
-	// printf("########\n");
 	TreeNode *best = NULL;
 	double max_rate = -1;
 	for (int i = 0; i < root->N; i++)
@@ -214,15 +196,12 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 				max_rate = rate;
 				best = root->ch[i];
 			}
-			// printf("%d %d %d %d\n", root->ch[i]->x, root->ch[i]->y, root->ch[i]->win, root->ch[i]->tot);
-			// std::cerr << root->ch[i]->x << " " << root->ch[i]->y << " " << root->ch[i]->win << " " << root->ch[i]->tot << " " << rate << std::endl;
 		}
 	}
 	
 	assert(best != NULL);
 	int x = best->x;
 	int y = best->y;
-	// printf("####%d %d\n", x, y);
 	// root->print();
 	delete root;
 	return new Point(x, y);

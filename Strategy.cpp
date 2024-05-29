@@ -6,6 +6,7 @@
 #include "Strategy.h"
 #include "Judge.h"
 #include "TreeNode.hpp"
+#include "SingleChoice.hpp"
 
 const int C = 1;
 const int MAX_ITER = 100000;
@@ -68,9 +69,21 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 	}*/
 	
 	// printf("??%d %d\n", lastX, lastY);
-	Point* pt = UctSearch(M, N, top, board, lastX, lastY, noX, noY);
-	x = pt->x;
-	y = pt->y;
+	Point* pt = SingleChoice(M, N, board, top, 1);
+	if (pt->x != -1 && pt->y != -1)
+	{
+		x = pt->x;
+		y = pt->y;
+		delete pt;
+	}
+	else
+	{
+		delete pt;
+		pt = UctSearch(M, N, top, board, lastX, lastY, noX, noY);
+		x = pt->x;
+		y = pt->y;
+		delete pt;
+	}
 	// printf("ME %d %d\n", x, y);
 
 	/*
@@ -210,7 +223,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	int x = best->x;
 	int y = best->y;
 	// printf("####%d %d\n", x, y);
-	root->print();
+	// root->print();
 	delete root;
 	return new Point(x, y);
 }

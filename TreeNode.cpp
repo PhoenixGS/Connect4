@@ -1,7 +1,9 @@
 #include <cassert>
 #include <iostream>
-#include "TreeNode.hpp"
 #include "Judge.h"
+#include "Point.h"
+#include "TreeNode.hpp"
+#include "SingleChoice.hpp"
 
 bool TreeNode::terminal()
 {
@@ -112,35 +114,51 @@ int TreeNode::rollout()
 			award = 0; // maybe 0.5
 			break;
 		}
-		int new_ava_ch = 0;
-		for (int i = 0; i < N; i++)
+		Point *pt = SingleChoice(M, N, new_board, new_top, new_self);
+		if (pt->x != -1 && pt->y != -1)
 		{
-			// printf("%d ", new_top[i]);
-			if (new_top[i] > 0)
+			new_x = pt->x;
+			new_y = pt->y;
+			new_board[pt->x][pt->y] = new_self ? 2 : 1;
+			new_top[pt->y]--;
+			if (new_y == noY && new_top[new_y] - 1 == noX)
 			{
-				new_ava_ch++;
+				new_top[new_y]--;
 			}
+			new_self = !new_self;
 		}
-		// printf("\n");
-		int new_i = rand() % new_ava_ch;
-		for (int i = 0; i < N; i++)
+		else
 		{
-			if (new_top[i] > 0)
+			int new_ava_ch = 0;
+			for (int i = 0; i < N; i++)
 			{
-				if (new_i == 0)
+				// printf("%d ", new_top[i]);
+				if (new_top[i] > 0)
 				{
-					new_x = new_top[i] - 1;
-					new_y = i;
-					new_board[new_top[i] - 1][i] = new_self ? 2 : 1;
-					new_top[i]--;
-					if (i == noY && new_top[i] - 1 == noX)
-					{
-						new_top[i]--;
-					}
-					new_self = !new_self;
-					break;
+					new_ava_ch++;
 				}
-				new_i--;
+			}
+			// printf("\n");
+			int new_i = rand() % new_ava_ch;
+			for (int i = 0; i < N; i++)
+			{
+				if (new_top[i] > 0)
+				{
+					if (new_i == 0)
+					{
+						new_x = new_top[i] - 1;
+						new_y = i;
+						new_board[new_top[i] - 1][i] = new_self ? 2 : 1;
+						new_top[i]--;
+						if (i == noY && new_top[i] - 1 == noX)
+						{
+							new_top[i]--;
+						}
+						new_self = !new_self;
+						break;
+					}
+					new_i--;
+				}
 			}
 		}
 	}

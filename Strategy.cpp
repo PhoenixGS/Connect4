@@ -9,7 +9,7 @@
 #include "SingleChoice.hpp"
 
 const int C = 1;
-const int MAX_ITER = 100000;
+const int MAX_ITER = 10000;
 
 using namespace std;
 

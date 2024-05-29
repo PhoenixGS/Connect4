@@ -2,8 +2,8 @@
 #define SingleChoice_hpp
 
 #include <stdio.h>
-#include <Point.h>
-#include <Judge.h>
+#include "Point.h"
+#include "Judge.h"
 
 #endif
 

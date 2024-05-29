@@ -71,6 +71,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 	Point* pt = UctSearch(M, N, top, board, lastX, lastY, noX, noY);
 	x = pt->x;
 	y = pt->y;
+	delete pt;
 	// printf("ME %d %d\n", x, y);
 
 	/*
@@ -210,7 +211,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	int x = best->x;
 	int y = best->y;
 	// printf("####%d %d\n", x, y);
-	root->print();
+	// root->print();
 	delete root;
 	return new Point(x, y);
 }

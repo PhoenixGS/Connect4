@@ -66,6 +66,7 @@ extern "C" Point *getPoint(const int M, const int N, const int *top, const int *
 		}
 	}*/
 	
+	// printf("??%d %d\n", lastX, lastY);
 	Point* pt = UctSearch(M, N, top, board, lastX, lastY, noX, noY);
 	x = pt->x;
 	y = pt->y;
@@ -185,6 +186,7 @@ struct TreeNode
 
 bool TreeNode::terminal()
 {
+	if (x == -1 && y == -1) return false;
 	if (userWin(x, y, M, N, board)) return true;
 	if (machineWin(x, y, M, N, board)) return true;
 	if (isTie(N, top)) return true;
@@ -208,7 +210,7 @@ TreeNode *TreeNode::expand()
 	{
 		if (top[i] > 0 && ch[i] == NULL)
 		{
-			std::cerr << "EX " << i << std::endl;
+			// std::cerr << "EX " << i << std::endl;
 			int **new_board = new int *[M];
 			for (int i = 0; i < M; i++)
 			{
@@ -229,9 +231,9 @@ TreeNode *TreeNode::expand()
 			{
 				new_top[i]--;
 			}
-			std::cerr << "READY TO NEW" << std::endl;
+			// std::cerr << "READY TO NEW" << std::endl;
 			ch[i] = new TreeNode(M, N, new_top, new_board, top[i] - 1, i, this, noX, noY, !self);
-			std::cerr << "NEWED" << std::endl;
+			// std::cerr << "NEWED" << std::endl;
 			
 			exp_ch++;
 			for (int i = 0; i < M; i++)
@@ -242,13 +244,13 @@ TreeNode *TreeNode::expand()
 			return ch[i];
 		}
 	}
-	std::cerr << "EXPAND" << exp_ch << " " << ava_ch << std::endl;
+	// std::cerr << "EXPAND" << exp_ch << " " << ava_ch << std::endl;
 	assert(false);
 }
 
 TreeNode *select(TreeNode *u)
 {
-	std::cerr << u->ava_ch << " " << u->exp_ch << std::endl;
+	// std::cerr << u->ava_ch << " " << u->exp_ch << std::endl;
 	while (! (u->terminal()))
 	{
 		if (u->all_expanded())
@@ -277,7 +279,7 @@ TreeNode *select(TreeNode *u)
 				std::cerr << u->ch[i] << " ";
 			}
 			std::cerr << std::endl;*/
-			std::cerr << "EXPAND" << std::endl;
+			// std::cerr << "EXPAND" << std::endl;
 			return u->expand();
 		}
 	}
@@ -375,17 +377,17 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 {
 	TreeNode *root = new TreeNode(M, N, top, board, lastX, lastY, NULL, noX, noY, true);
 	// printf("NEW SUCCESS");
-	std::cerr << "N";
+	// std::cerr << "N";
 
 	int T = 0;
 	while (T < MAX_ITER)
 	{
 		TreeNode *v = select(root);
 		
-		std::cerr << "S";
+		// std::cerr << "S";
 		// printf("begin roll\n");
 		int reward = v->rollout();
-		std::cerr << "R";
+		// std::cerr << "R";
 		// printf("end roll\n");
 		while (v != NULL)
 		{
@@ -393,7 +395,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 			v->win += reward;
 			v = v->fa;
 		}
-		std::cerr << "B";
+		// std::cerr << "B";
 		T++;
 	}
 	

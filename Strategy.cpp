@@ -5,6 +5,7 @@
 #include "Point.h"
 #include "Strategy.h"
 #include "Judge.h"
+#include "TreeNode.hpp"
 
 const int C = 1;
 const int MAX_ITER = 100000;
@@ -105,148 +106,6 @@ void clearArray(int M, int N, int **board)
 	添加你自己的辅助函数，你可以声明自己的类、函数，添加新的.h .cpp文件来辅助实现你的想法
 */
 
-struct TreeNode
-{
-	int M, N;
-	int win, tot;
-	bool self;
-	int **board;
-	int *top;
-	int x, y;
-	int ava_ch, exp_ch;
-	int noX, noY;
-	TreeNode *fa;
-	TreeNode **ch;
-
-	bool terminal();
-	bool all_expanded();
-	TreeNode *expand();
-	int rollout();
-
-	TreeNode(int M, int N, const int *top, int **board, int x, int y, TreeNode *fa, int noX, int noY, bool self)
-	{
-		this->M = M;
-		this->N = N;
-		this->win = 0;
-		this->tot = 0;
-		this->self = self;
-		this->board = new int *[M];
-		for (int i = 0; i < M; i++)
-		{
-			this->board[i] = new int[N];
-			for (int j = 0; j < N; j++)
-			{
-				this->board[i][j] = board[i][j];
-			}
-		}
-		this->top = new int[N];
-		for (int i = 0; i < N; i++)
-		{
-			this->top[i] = top[i];
-		}
-		this->x = x;
-		this->y = y;
-		this->fa = fa;
-		this->ch = new TreeNode *[N];
-		for (int i = 0; i < N; i++)
-		{
-			ch[i] = NULL;
-		}
-		this->noX = noX;
-		this->noY = noY;
-		this->ava_ch = 0;
-		for (int i = 0; i < N; i++)
-		{
-			if (top[i] > 0)
-			{
-				this->ava_ch++;
-			}
-		}
-		this->exp_ch = 0;
-	}
-
-	~TreeNode()
-	{
-		for (int i = 0; i < M; i++)
-		{
-			delete[] board[i];
-		}
-		delete[] board;
-		delete[] top;
-		if (ch != NULL)
-		{
-			for (int i = 0; i < N; i++)
-			{
-				delete ch[i];
-			}
-			delete[] ch;
-		}
-	}
-};
-
-bool TreeNode::terminal()
-{
-	if (x == -1 && y == -1) return false;
-	if (userWin(x, y, M, N, board)) return true;
-	if (machineWin(x, y, M, N, board)) return true;
-	if (isTie(N, top)) return true;
-	return false;
-}
-
-bool TreeNode::all_expanded()
-{
-	return exp_ch == ava_ch;
-}
-
-TreeNode *TreeNode::expand()
-{
-	/*printf("%d %d %d\n", self, ava_ch, tot);
-	for (int i = 0; i < N; i++)
-	{
-		printf("%d ", top[i]);
-	}
-	printf("\n");*/
-	for (int i = 0; i < N; i++)
-	{
-		if (top[i] > 0 && ch[i] == NULL)
-		{
-			// std::cerr << "EX " << i << std::endl;
-			int **new_board = new int *[M];
-			for (int i = 0; i < M; i++)
-			{
-				new_board[i] = new int[N];
-				for (int j = 0; j < N; j++)
-				{
-					new_board[i][j] = board[i][j];
-				}
-			}
-			new_board[top[i] - 1][i] = self ? 2 : 1;
-			int new_top[N];
-			for (int j = 0; j < N; j++)
-			{
-				new_top[j] = top[j];
-			}
-			new_top[i]--;
-			if (i == noY && new_top[i] - 1 == noX)
-			{
-				new_top[i]--;
-			}
-			// std::cerr << "READY TO NEW" << std::endl;
-			ch[i] = new TreeNode(M, N, new_top, new_board, top[i] - 1, i, this, noX, noY, !self);
-			// std::cerr << "NEWED" << std::endl;
-			
-			exp_ch++;
-			for (int i = 0; i < M; i++)
-			{
-				delete[] new_board[i];
-			}
-			delete[] new_board;
-			return ch[i];
-		}
-	}
-	// std::cerr << "EXPAND" << exp_ch << " " << ava_ch << std::endl;
-	assert(false);
-}
 
 TreeNode *select(TreeNode *u)
 {
@@ -261,7 +120,11 @@ TreeNode *select(TreeNode *u)
 			{
 				if (u->ch[i] != NULL)
 				{
-					double ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+					double ucb = 0;
+					if (v->self)
+					{
+						(double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+					}
 					if (ucb > max_ucb)
 					{
 						max_ucb = ucb;
@@ -286,92 +149,6 @@ TreeNode *select(TreeNode *u)
 	return u;
 }
 
-int TreeNode::rollout()
-{
-	// printf("ROLLBEG\n");
-	int **new_board = new int *[M];
-	for (int i = 0; i < M; i++)
-	{
-		new_board[i] = new int[N];
-		for (int j = 0; j < N; j++)
-		{
-			new_board[i][j] = board[i][j];
-		}
-	}
-	for (int i = 0; i < M; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			new_board[i][j] = board[i][j];
-		}
-	}
-	int new_top[N];
-	for (int i = 0; i < N; i++)
-	{
-		new_top[i] = top[i];
-	}
-	int new_x = x;
-	int new_y = y;
-	int new_self = self;
-	int award = 0;
-	while (true)
-	{
-		if (userWin(new_x, new_y, M, N, new_board))
-		{
-			award = self ? 0 : 1;
-			break;
-		}
-		if (machineWin(new_x, new_y, M, N, new_board))
-		{
-			award = self ? 1 : 0;
-			break;
-		}
-		if (isTie(N, new_top))
-		{
-			award = 0; // maybe 0.5
-			break;
-		}
-		int new_ava_ch = 0;
-		for (int i = 0; i < N; i++)
-		{
-			// printf("%d ", new_top[i]);
-			if (new_top[i] > 0)
-			{
-				new_ava_ch++;
-			}
-		}
-		// printf("\n");
-		int new_i = rand() % new_ava_ch;
-		for (int i = 0; i < N; i++)
-		{
-			if (new_top[i] > 0)
-			{
-				if (new_i == 0)
-				{
-					new_x = new_top[i] - 1;
-					new_y = i;
-					new_board[new_top[i] - 1][i] = new_self ? 2 : 1;
-					new_top[i]--;
-					if (i == noY && new_top[i] - 1 == noX)
-					{
-						new_top[i]--;
-					}
-					new_self = !new_self;
-					break;
-				}
-				new_i--;
-			}
-		}
-	}
-	
-	// printf("ROLLEND\n");
-	for (int i = 0; i < M; i++)
-	{
-		delete[] new_board[i];
-	}
-	delete[] new_board;
-	return award;
-}
 
 Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY, int noX, int noY)
 {

@@ -22,6 +22,7 @@ struct TreeNode
 	bool all_expanded();
 	TreeNode *expand();
 	int rollout();
+	void print();
 
 	TreeNode(int M, int N, const int *top, int **board, int x, int y, TreeNode *fa, int noX, int noY, bool self)
 	{

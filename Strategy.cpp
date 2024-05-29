@@ -121,9 +121,13 @@ TreeNode *select(TreeNode *u)
 				if (u->ch[i] != NULL)
 				{
 					double ucb = 0;
-					if (v->self)
+					if (u->ch[i]->self)
 					{
-						(double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+						ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+					}
+					else
+					{
+						ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
 					}
 					if (ucb > max_ucb)
 					{
@@ -164,12 +168,20 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		// std::cerr << "S";
 		// printf("begin roll\n");
 		int reward = v->rollout();
+		int ori_self = v->self;
 		// std::cerr << "R";
 		// printf("end roll\n");
 		while (v != NULL)
 		{
 			v->tot++;
-			v->win += reward;
+			if (ori_self == v->self)
+			{
+				v->win += reward;
+			}
+			else
+			{
+				v->win += 1 - reward;
+			}
 			v = v->fa;
 		}
 		// std::cerr << "B";
@@ -183,7 +195,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	{
 		if (root->ch[i] != NULL)
 		{
-			double rate = (double)root->ch[i]->win / root->ch[i]->tot;
+			double rate = 1 - (double)root->ch[i]->win / root->ch[i]->tot;
 			if (rate > max_rate)
 			{
 				max_rate = rate;
@@ -197,6 +209,8 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	assert(best != NULL);
 	int x = best->x;
 	int y = best->y;
+	// printf("####%d %d\n", x, y);
+	root->print();
 	delete root;
 	return new Point(x, y);
 }

@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 #include "TreeNode.hpp"
 #include "Judge.h"
 
@@ -151,4 +152,18 @@ int TreeNode::rollout()
 	}
 	delete[] new_board;
 	return award;
+}
+
+void TreeNode::print()
+{
+	// printf("%d %d %d %d %d %d %d\n", this, fa, x, y, win, tot, self);
+	std::cerr << this << " " << fa << " " << x << " " << y << " " << win << " " << tot << " " << self << std::endl;
+	if (fa == NULL)
+	for (int i = 0; i < N; i++)
+	{
+		if (ch[i] != NULL)
+		{
+			ch[i]->print();
+		}
+	}
 }

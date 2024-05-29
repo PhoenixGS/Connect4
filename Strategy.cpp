@@ -8,7 +8,7 @@
 #include "TreeNode.hpp"
 #include "SingleChoice.hpp"
 
-const int C = 1;
+const double C = 0.6;
 const int MAX_ITER = 10000;
 
 using namespace std;
@@ -118,35 +118,40 @@ void clearArray(int M, int N, int **board)
 */
 
 
+TreeNode *ucb_best(TreeNode *u)
+{
+	TreeNode *v = NULL;
+	double max_ucb = -1;
+	for (int i = 0; i < u->N; i++)
+	{
+		if (u->ch[i] != NULL)
+		{
+			double ucb = 0;
+			if (u->ch[i]->self)
+			{
+				ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+			}
+			else
+			{
+				ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
+			}
+			if (ucb > max_ucb)
+			{
+				max_ucb = ucb;
+				v = u->ch[i];
+			}
+		}
+	}
+	return v;
+}
+
 TreeNode *select(TreeNode *u)
 {
 	while (! (u->terminal()))
 	{
 		if (u->all_expanded())
 		{
-			TreeNode *v = NULL;
-			double max_ucb = -1;
-			for (int i = 0; i < u->N; i++)
-			{
-				if (u->ch[i] != NULL)
-				{
-					double ucb = 0;
-					if (u->ch[i]->self)
-					{
-						ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-					}
-					else
-					{
-						ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-					}
-					if (ucb > max_ucb)
-					{
-						max_ucb = ucb;
-						v = u->ch[i];
-					}
-				}
-			}
-			u = v;
+			u = ucb_best(u);
 		}
 		else
 		{
@@ -184,20 +189,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 		T++;
 	}
 	
-	TreeNode *best = NULL;
-	double max_rate = -1;
-	for (int i = 0; i < root->N; i++)
-	{
-		if (root->ch[i] != NULL)
-		{
-			double rate = 1 - (double)root->ch[i]->win / root->ch[i]->tot;
-			if (rate > max_rate)
-			{
-				max_rate = rate;
-				best = root->ch[i];
-			}
-		}
-	}
+	TreeNode *best = ucb_best(root);
 	
 	assert(best != NULL);
 	int x = best->x;

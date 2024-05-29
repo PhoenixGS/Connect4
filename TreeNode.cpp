@@ -21,17 +21,10 @@ bool TreeNode::all_expanded()
 
 TreeNode *TreeNode::expand()
 {
-	/*printf("%d %d %d\n", self, ava_ch, tot);
-	for (int i = 0; i < N; i++)
-	{
-		printf("%d ", top[i]);
-	}
-	printf("\n");*/
 	for (int i = 0; i < N; i++)
 	{
 		if (top[i] > 0 && ch[i] == NULL)
 		{
-			// std::cerr << "EX " << i << std::endl;
 			int **new_board = new int *[M];
 			for (int i = 0; i < M; i++)
 			{
@@ -52,9 +45,7 @@ TreeNode *TreeNode::expand()
 			{
 				new_top[i]--;
 			}
-			// std::cerr << "READY TO NEW" << std::endl;
 			ch[i] = new TreeNode(M, N, new_top, new_board, top[i] - 1, i, this, noX, noY, !self);
-			// std::cerr << "NEWED" << std::endl;
 			
 			exp_ch++;
 			for (int i = 0; i < M; i++)
@@ -65,13 +56,11 @@ TreeNode *TreeNode::expand()
 			return ch[i];
 		}
 	}
-	// std::cerr << "EXPAND" << exp_ch << " " << ava_ch << std::endl;
 	assert(false);
 }
 
-int TreeNode::rollout()
+double TreeNode::rollout()
 {
-	// printf("ROLLBEG\n");
 	int **new_board = new int *[M];
 	for (int i = 0; i < M; i++)
 	{
@@ -96,7 +85,7 @@ int TreeNode::rollout()
 	int new_x = x;
 	int new_y = y;
 	int new_self = self;
-	int award = 0;
+	double award = 0;
 	while (true)
 	{
 		if (userWin(new_x, new_y, M, N, new_board))
@@ -111,34 +100,32 @@ int TreeNode::rollout()
 		}
 		if (isTie(N, new_top))
 		{
-			award = 0; // maybe 0.5
+			award = 0.5; // maybe 0.5
 			break;
 		}
-		Point *pt = SingleChoice(M, N, new_board, new_top, new_self);
-		if (pt->x != -1 && pt->y != -1)
-		{
-			new_x = pt->x;
-			new_y = pt->y;
-			new_board[pt->x][pt->y] = new_self ? 2 : 1;
-			new_top[pt->y]--;
-			if (new_y == noY && new_top[new_y] - 1 == noX)
-			{
-				new_top[new_y]--;
-			}
-			new_self = !new_self;
-		}
-		else
-		{
+//		Point *pt = SingleChoice(M, N, new_board, new_top, new_self);
+//		if (pt->x != -1 && pt->y != -1)
+//		{
+//			new_x = pt->x;
+//			new_y = pt->y;
+//			new_board[pt->x][pt->y] = new_self ? 2 : 1;
+//			new_top[pt->y]--;
+//			if (new_y == noY && new_top[new_y] - 1 == noX)
+//			{
+//				new_top[new_y]--;
+//			}
+//			new_self = !new_self;
+//		}
+//		else
+//		{
 			int new_ava_ch = 0;
 			for (int i = 0; i < N; i++)
 			{
-				// printf("%d ", new_top[i]);
 				if (new_top[i] > 0)
 				{
 					new_ava_ch++;
 				}
 			}
-			// printf("\n");
 			int new_i = rand() % new_ava_ch;
 			for (int i = 0; i < N; i++)
 			{
@@ -160,7 +147,7 @@ int TreeNode::rollout()
 					new_i--;
 				}
 			}
-		}
+//		}
 	}
 	
 	// printf("ROLLEND\n");
@@ -174,14 +161,15 @@ int TreeNode::rollout()
 
 void TreeNode::print()
 {
-	// printf("%d %d %d %d %d %d %d\n", this, fa, x, y, win, tot, self);
 	std::cerr << this << " " << fa << " " << x << " " << y << " " << win << " " << tot << " " << self << std::endl;
-	if (fa == NULL)
-	for (int i = 0; i < N; i++)
+	if (fa == NULL || fa->fa == NULL)
 	{
-		if (ch[i] != NULL)
+		for (int i = 0; i < N; i++)
 		{
-			ch[i]->print();
+			if (ch[i] != NULL)
+			{
+				ch[i]->print();
+			}
 		}
 	}
 }

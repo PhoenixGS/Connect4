@@ -8,7 +8,8 @@
 struct TreeNode
 {
 	int M, N;
-	int win, tot;
+	double win;
+	int tot;
 	bool self;
 	int **board;
 	int *top;
@@ -21,7 +22,7 @@ struct TreeNode
 	bool terminal();
 	bool all_expanded();
 	TreeNode *expand();
-	int rollout();
+	double rollout();
 	void print();
 
 	TreeNode(int M, int N, const int *top, int **board, int x, int y, TreeNode *fa, int noX, int noY, bool self)

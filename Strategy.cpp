@@ -9,7 +9,7 @@
 #include "SingleChoice.hpp"
 
 const double C = 0.6;
-const int MAX_ITER = 10000;
+const int MAX_ITER = 100000;
 
 using namespace std;
 
@@ -171,7 +171,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	{
 		TreeNode *v = select(root);
 		
-		int reward = v->rollout();
+		double reward = v->rollout();
 		int ori_self = v->self;
 		while (v != NULL)
 		{
@@ -194,7 +194,7 @@ Point *UctSearch(int M, int N, const int *top, int **board, int lastX, int lastY
 	assert(best != NULL);
 	int x = best->x;
 	int y = best->y;
-	// root->print();
+	root->print();
 	delete root;
 	return new Point(x, y);
 }

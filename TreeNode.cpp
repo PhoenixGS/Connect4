@@ -86,6 +86,16 @@ double TreeNode::rollout()
 	int new_y = y;
 	int new_self = self;
 	double award = 0;
+	int *ava = new int[N];
+	int avas = 0;
+	for (int i = 0; i < N; i++)
+	{
+		if (new_top[i] > 0)
+		{
+			ava[avas] = i;
+			avas++;
+		}
+	}
 	while (true)
 	{
 		if (userWin(new_x, new_y, M, N, new_board))
@@ -98,43 +108,30 @@ double TreeNode::rollout()
 			award = self ? 1 : 0;
 			break;
 		}
-		if (isTie(N, new_top))
+		// if (isTie(N, new_top))
+		if (avas == 0)
 		{
 			award = 0.5; // maybe 0.5
 			break;
 		}
-		int new_ava_ch = 0;
-		for (int i = 0; i < N; i++)
+		
+		int new_i = rand() % avas;
+		int new_y = ava[new_i];
+		int new_x = new_top[new_y] - 1;
+		new_board[new_x][new_y] = new_self ? 2 : 1;
+		new_top[new_y]--;
+		if (new_y == noY && new_top[new_y] - 1 == noX)
 		{
-			if (new_top[i] > 0)
-			{
-				new_ava_ch++;
-			}
+			new_top[new_y]--;
 		}
-		int new_i = rand() % new_ava_ch;
-		for (int i = 0; i < N; i++)
+		new_self = !new_self;
+		if (new_top[new_y] == 0)
 		{
-			if (new_top[i] > 0)
-			{
-				if (new_i == 0)
-				{
-					new_x = new_top[i] - 1;
-					new_y = i;
-					new_board[new_top[i] - 1][i] = new_self ? 2 : 1;
-					new_top[i]--;
-					if (i == noY && new_top[i] - 1 == noX)
-					{
-						new_top[i]--;
-					}
-					new_self = !new_self;
-					break;
-				}
-				new_i--;
-			}
+			std::swap(ava[new_i], ava[avas - 1]);
+			avas--;
 		}
 	}
 	
-	// printf("ROLLEND\n");
 	for (int i = 0; i < M; i++)
 	{
 		delete[] new_board[i];

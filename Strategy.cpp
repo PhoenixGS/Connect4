@@ -127,14 +127,7 @@ TreeNode *ucb_best(TreeNode *u)
 		if (u->ch[i] != NULL)
 		{
 			double ucb = 0;
-//			if (u->ch[i]->self)
-//			{
-				ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-//			}
-//			else
-//			{
-//				ucb = (1 - (double)u->ch[i]->win / u->ch[i]->tot) + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
-//			}
+			ucb = (double)u->ch[i]->win / u->ch[i]->tot + C * sqrt(2 * log(u->tot) / u->ch[i]->tot);
 			if (ucb > max_ucb)
 			{
 				max_ucb = ucb;

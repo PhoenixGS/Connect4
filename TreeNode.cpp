@@ -117,8 +117,8 @@ double TreeNode::rollout()
 		}
 		
 		int new_i = rand() % avas;
-		int new_y = ava[new_i];
-		int new_x = new_top[new_y] - 1;
+		new_y = ava[new_i];
+		new_x = new_top[new_y] - 1;
 		new_board[new_x][new_y] = new_self ? 2 : 1;
 		new_top[new_y]--;
 		if (new_y == noY && new_top[new_y] - 1 == noX)

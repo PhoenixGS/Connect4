@@ -111,6 +111,7 @@ double TreeNode::rollout()
 		// if (isTie(N, new_top))
 		if (avas == 0)
 		{
+			assert(isTie(N, new_top));
 			award = 0.5; // maybe 0.5
 			break;
 		}
@@ -137,6 +138,7 @@ double TreeNode::rollout()
 		delete[] new_board[i];
 	}
 	delete[] new_board;
+	delete[] ava;
 	return award;
 }
 

@@ -8,7 +8,7 @@
 #include "TreeNode.hpp"
 #include "SingleChoice.hpp"
 
-const double C = 0.65;
+const double C = 0.55;
 const int MAX_ITER = 100000;
 
 using namespace std;
